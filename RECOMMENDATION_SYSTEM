@@ -1,0 +1,79 @@
+import pandas as pd
+
+# ----------------------------------
+# Movie Dataset 
+# ----------------------------------
+data = {
+    'movie': [
+        'Iron Man',
+        'Avengers',
+        'Batman',
+        'Superman',
+        'Interstellar',
+        'Inception',
+        'The Martian',
+        'Gravity',
+        '3 Idiots',
+        'Dangal',
+        'Jab We Met',
+        'La La Land',
+        'Titanic',
+        'The Notebook',
+        'Fight Club'
+    ],
+    'genre': [
+        'Action',
+        'Action',
+        'Action',
+        'Action',
+        'SciFi',
+        'SciFi',
+        'SciFi',
+        'SciFi',
+        'Family',
+        'Family',
+        'Romantic',
+        'Romantic',
+        'Romantic',
+        'Romantic',
+        'Thriller'
+    ]
+}
+
+df = pd.DataFrame(data)
+
+# Convert movie names to lowercase for matching
+df['movie_lower'] = df['movie'].str.lower()
+
+# ----------------------------------
+# Recommendation Function
+# ----------------------------------
+def recommend_similar_movies(movie_title, num_recommendations=3):
+    movie_title = movie_title.lower()
+
+    if movie_title not in df['movie_lower'].values:
+        return f"Movie '{movie_title}' not found in the database."
+
+    # Get genre of selected movie
+    selected_genre = df[df['movie_lower'] == movie_title]['genre'].values[0]
+
+    # Find movies with same genre
+    recommendations = df[
+        (df['genre'] == selected_genre) &
+        (df['movie_lower'] != movie_title)
+    ]
+
+    return recommendations['movie'].head(num_recommendations).tolist()
+
+# ----------------------------------
+# User Input
+# ----------------------------------
+movie_name = input("Enter a movie title: ")
+result = recommend_similar_movies(movie_name)
+
+if isinstance(result, list):
+    print(f"\nMovies similar to '{movie_name}':")
+    for movie in result:
+        print("•", movie)
+else:
+    print(result)
